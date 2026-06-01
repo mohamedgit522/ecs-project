@@ -1,0 +1,46 @@
+name: Terraform Destroy
+
+on:
+  workflow_dispatch:
+
+env:
+  AWS_REGION: eu-west-2
+  TF_WORKING_DIR: terraform
+
+jobs:
+  terraform-destroy:
+    name: Terraform Destroy
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::646322278086:role/github-actions-ecs-role
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.15.0
+
+      - name: Terraform Init
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform init
+
+      - name: Terraform Destroy
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform destroy -auto-approve
+
+      - name: Summary
+        run: |
+          echo "### ✅ Terraform Destroy Complete" >> $GITHUB_STEP_SUMMARY
+          echo "- **All infrastructure removed**" >> $GITHUB_STEP_SUMMARY
+          echo "- **Region:** ${{ env.AWS_REGION }}" >> $GITHUB_STEP_SUMMARY

@@ -1,0 +1,59 @@
+name: App Pipeline — Build and Push to ECR
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'Dockerfile'
+      - 'server.js'
+      - 'src/**'
+      - 'public/**'
+  workflow_dispatch:
+
+env:
+  AWS_REGION: eu-west-2
+  ECR_REPOSITORY: threat-composer
+  AWS_ACCOUNT_ID: '646322278086'
+
+jobs:
+  build-and-push:
+    name: Build and Push Docker Image
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::646322278086:role/github-actions-ecs-role
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, tag and push image to ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build \
+            --platform linux/amd64 \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:latest \
+            .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
+      - name: Summary
+        run: |
+          echo "### ✅ Docker Image Built and Pushed" >> $GITHUB_STEP_SUMMARY
+          echo "- **Repository:** ${{ env.ECR_REPOSITORY }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Tag:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Region:** ${{ env.AWS_REGION }}" >> $GITHUB_STEP_SUMMARY

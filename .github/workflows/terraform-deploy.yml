@@ -1,0 +1,69 @@
+name: Terraform Deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'terraform/**'
+  workflow_dispatch:
+
+env:
+  AWS_REGION: eu-west-2
+  TF_WORKING_DIR: terraform
+
+jobs:
+  terraform-deploy:
+    name: Terraform Init, Plan and Apply
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::646322278086:role/github-actions-ecs-role
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.15.0
+
+      - name: Terraform Init
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform init
+
+      - name: Terraform Format Check
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform fmt -check -recursive
+
+      - name: Terraform Validate
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform validate
+
+      - name: Terraform Plan
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform plan
+
+      - name: Terraform Apply
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform apply -auto-approve
+
+      - name: Health Check
+        run: |
+          echo "Waiting for app to be ready..."
+          sleep 60
+          curl --fail https://tm.mohamedahmed.uk/health || exit 1
+          echo "### ✅ Health check passed" >> $GITHUB_STEP_SUMMARY
+
+      - name: Summary
+        run: |
+          echo "### ✅ Terraform Deploy Complete" >> $GITHUB_STEP_SUMMARY
+          echo "- **Environment:** Production" >> $GITHUB_STEP_SUMMARY
+          echo "- **Region:** ${{ env.AWS_REGION }}" >> $GITHUB_STEP_SUMMARY
