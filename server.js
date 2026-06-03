@@ -1,3 +1,5 @@
+// Threat Composer — Express server with health endpoint
+
 const express = require('express');
 const path = require('path');
 
