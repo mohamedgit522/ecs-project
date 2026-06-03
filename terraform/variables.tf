@@ -45,4 +45,4 @@ variable "desired_count" {
   description = "Number of ECS tasks to run"
   type        = number
   default     = 1
-}
+}# updated
