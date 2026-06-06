@@ -1,9 +1,4 @@
-# Threat Composer — ECS Deployment on AWS 🚀
-
-![AWS](https://img.shields.io/badge/AWS-ECS%20Fargate-orange)
-![Terraform](https://img.shields.io/badge/IaC-Terraform-purple)
-![Docker](https://img.shields.io/badge/Container-Docker-blue)
-![HTTPS](https://img.shields.io/badge/HTTPS-Enabled-green)
+# Threat Composer — ECS Deployment on AWS
 
 ## Overview
 
@@ -13,7 +8,7 @@ The application itself is Amazon's open source Threat Composer tool — a threat
 
 ---
 
-## Live Demo 🌐
+## Live Demo
 
 **Live URL:** [https://tm.mohamedahmed.uk](https://tm.mohamedahmed.uk)
 
@@ -28,7 +23,7 @@ The application itself is Amazon's open source Threat Composer tool — a threat
 
 ---
 
-## Deployment Evidence 📸
+## Deployment Evidence
 
 ### Docker Container Running Locally
 ![Docker container running on port 3000](./images/docker-run.png)
@@ -45,12 +40,14 @@ The application itself is Amazon's open source Threat Composer tool — a threat
 ### ACM Certificate Issued
 ![ACM certificate issued for tm.mohamedahmed.uk](./images/acm-certificate.png)
 
-## Architecture 🏗️
+---
+
+## Architecture
 
 ```mermaid
 flowchart TD
-    User(["👤 User"])
-    CF["☁️ Cloudflare DNS\ntm.mohamedahmed.uk"]
+    User(["User"])
+    CF["Cloudflare DNS\ntm.mohamedahmed.uk"]
     
     subgraph AWS ["AWS — eu-west-2 (London)"]
         subgraph VPC ["Custom VPC — 10.0.0.0/16"]
@@ -103,7 +100,7 @@ flowchart TD
 
 ---
 
-## Project Structure 📁
+## Project Structure
 ```
 .
 ├── src/                        # Threat Composer source code
@@ -126,11 +123,10 @@ flowchart TD
 │   └── workflows/              # CI/CD pipeline definitions
 └── README.md
 
-...
 ```
 ---
 
-## Prerequisites ✅
+## Prerequisites
 
 Make sure you have the following installed and configured:
 
@@ -144,7 +140,7 @@ Make sure you have the following installed and configured:
 
 ---
 
-## Local Setup 💻
+## Local Setup
 
 **1. Clone the repository:**
 ```bash
@@ -179,7 +175,7 @@ http://localhost:3000/workspaces/default/dashboard
 
 ---
 
-## Infrastructure Deployment 🏗️
+## Infrastructure Deployment
 
 **1. Navigate to the Terraform directory:**
 ```bash
@@ -213,7 +209,7 @@ terraform destroy
 
 ---
 
-## CI/CD Pipelines ⚙️
+## CI/CD Pipelines
 
 | Pipeline | Trigger | What it does |
 |---|---|---|
@@ -229,9 +225,10 @@ terraform destroy
 
 ### Terraform Destroy — Success
 ![Terraform destroy success](./images/terraform-destroy-success.png)
+
 ---
 
-## Technologies Used 🛠️
+## Technologies Used
 
 | Category | Technology |
 |---|---|
@@ -244,7 +241,7 @@ terraform destroy
 
 ---
 
-## Key Decisions 📝
+## Key Decisions
 
 **Why ECS Fargate over EC2?**
 Fargate is serverless — no servers to manage, patch, or scale manually. You define CPU and memory requirements and AWS handles the rest. Ideal for a containerised workload where the focus is the application, not the infrastructure underneath.
