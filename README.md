@@ -215,14 +215,20 @@ terraform destroy
 
 ## CI/CD Pipelines ⚙️
 
-<!-- Add pipeline screenshots after CI/CD is complete -->
-
 | Pipeline | Trigger | What it does |
 |---|---|---|
-| App Pipeline | Push to main | Builds Docker image, tags with commit SHA, pushes to ECR |
-| Terraform Deploy | Push to main | Runs terraform init, plan, apply |
+| App Pipeline | Push to main (app files) | Builds Docker image, tags with commit SHA, pushes to ECR |
+| Terraform Deploy | Push to main (terraform files) | Runs terraform init, fmt, validate, plan, apply + health check |
 | Terraform Destroy | Manual trigger | Tears down all infrastructure |
 
+### App Pipeline — Success
+![App pipeline success](./images/app-pipeline-success.png)
+
+### Terraform Deploy — Success
+![Terraform deploy success](./images/terraform-deploy-success.png)
+
+### Terraform Destroy — Success
+![Terraform destroy success](./images/terraform-destroy-success.png)
 ---
 
 ## Technologies Used 🛠️
